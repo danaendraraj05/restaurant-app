@@ -1,0 +1,37 @@
+<!-- restaurant/main/templates/restaurant_detail.html -->
+
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<h1>{{ restaurant.title }}</h1>
+<p>Rating: {{ restaurant.rating }}</p>
+<p>Cost for two: {{ restaurant.cost_for_two }}</p>
+<p>Owner: {{ restaurant.owner }}</p>
+<p>Location: {{ restaurant.location }}</p>
+<p>Address: {{ restaurant.address }}</p>
+<p>Timings: {{ restaurant.timings }}</p>
+<p>Type: {{ restaurant.food_type }}</p>
+
+<h2>Dishes</h2>
+<ul>
+    {% for dish in dishes %}
+        <li>{{ dish.name }} - {{ dish.price }} ({{ dish.dish_type }})</li>
+    {% endfor %}
+</ul>
+
+<h2>Photos</h2>
+<ul>
+    {% for photo in photos %}
+        <img src="{{ photo.image.url }}" alt="Restaurant Photo">
+    {% endfor %}
+</ul>
+
+<h2>Reviews</h2>
+<ul>
+    {% for review in reviews %}
+        <li>{{ review.user }}: {{ review.text }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

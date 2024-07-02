@@ -1,0 +1,37 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1>Restaurants</h1>
+    <form method="get" class="filters-form">
+        <!-- Filters and Sorting Form -->
+        <label for="sort_by">Sort By:</label>
+        <select name="sort_by" id="sort_by">
+            <option value="">Select</option>
+            <option value="cost_high_to_low">Cost: High to Low</option>
+            <option value="cost_low_to_high">Cost: Low to High</option>
+            <option value="rating_high_to_low">Rating: High to Low</option>
+            <option value="rating_low_to_high">Rating: Low to High</option>
+        </select>
+        <button type="submit" class="filter-btn">Filter</button>
+    </form>
+
+    <div class="restaurants-list">
+        {% for restaurant in restaurants %}
+        <div class="restaurant-card">
+            {% for photo in restaurant.photos.all %}
+            <img src="{{ photo.image.url }}" class="restaurant-img" alt="Restaurant Photo">
+            {% empty %}
+            <img src="{% static 'placeholder.jpg' %}" class="restaurant-img" alt="Placeholder Image">
+            {% endfor %}
+            <div class="restaurant-info">
+                <h5 class="restaurant-title"><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.title }}</a></h5>
+                <p class="restaurant-rating">Rating: {{ restaurant.rating }}</p>
+                <p class="restaurant-cost">Cost for two: {{ restaurant.cost_for_two }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

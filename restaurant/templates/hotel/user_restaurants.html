@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Your Restaurants</h1>
+
+<ul>
+    {% for restaurant in restaurants %}
+        <li>
+            <a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.title }}</a>
+            <p>Rating: {{ restaurant.rating }}</p>
+            <p>Cost for two: {{ restaurant.cost_for_two }}</p>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
