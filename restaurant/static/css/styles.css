@@ -1,0 +1,65 @@
+/* restaurant/hotel/static/css/styles.css */
+
+/* Reset some default styles for consistent layout */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+header nav ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+}
+
+header nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+/* restaurant/static/css/restaurant_list.css */
+
+.restaurant-list {
+    list-style: none;
+    padding: 0;
+}
+
+.restaurant-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.restaurant-item:hover {
+    background-color: #e0e0e0;
+}
+
+.restaurant-item h2 {
+    margin-top: 0;
+}
+
+.restaurant-item .rating {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.restaurant-item .cost {
+    font-style: italic;
+}
+
