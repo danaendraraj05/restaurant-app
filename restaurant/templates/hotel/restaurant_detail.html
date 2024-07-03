@@ -2,54 +2,131 @@
 {% load static %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    <button id="bookmark-toggle-btn" data-restaurant-id="{{ restaurant.pk }}">
-        {% if restaurant.bookmarked_by_user %}
-            Remove Bookmark
-        {% else %}
-            Add Bookmark
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        grid-column: span 2;
+    }
+    .restaurant-name {
+        font-size: 2em;
+        font-weight: bold;
+    }
+    .bookmark-btn {
+        background-color: red;
+        color: white;
+        padding: 10px;
+        border: none;
+        width: 120px;
+        text-align: center;
+        cursor: pointer;
+    }
+    .details, .photos-section {
+        grid-column: span 2;
+        margin-top: 20px;
+    }
+    .dishes-section {
+        grid-column: span 2;
+        margin-top: 20px;
+    }
+    .dishes-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .dishes-table th, .dishes-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .dishes-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    .reviews-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        grid-column: span 2;
+    }
+    .reviews-list {
+        width: 70%;
+    }
+    .add-review-button {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <div class="restaurant-name">{{ restaurant.title }}</div>
+        {% if user.is_authenticated %}
+            <button id="bookmark-toggle-btn" data-restaurant-id="{{ restaurant.pk }}" class="bookmark-btn">
+                {% if restaurant.bookmarked_by_user %}
+                    Remove Bookmark
+                {% else %}
+                    Add Bookmark
+                {% endif %}
+            </button>
         {% endif %}
-    </button>
-{% endif %}
-<h1>{{ restaurant.title }}</h1>
-<p>Rating: {{ restaurant.average_rating }}</p>
-<p>Cost for two: {{ restaurant.cost_for_two }}</p>
-<p>Owner: {{ restaurant.owner }}</p>
-<p>Location: {{ restaurant.location }}</p>
-<p>Address: {{ restaurant.address }}</p>
-<p>Timings: {{ restaurant.opening_time }} to {{ restaurant.closing_time }}</p>
-<p>Type: {{ restaurant.food_type }}</p>
-
-<h2>Dishes</h2>
-<ul>
-    {% for dish in dishes %}
-        <p>{{ dish.name }} - {{ dish.price }} ({{ dish.dish_type }})</p>
-    {% endfor %}
-</ul>
-
-<h2>Photos</h2>
-<ul>
-    {% for photo in photos %}
-        <img src="{{ photo.image.url }}" alt="Restaurant Photo">
-    {% endfor %}
-</ul>
-
-<h2>Reviews</h2>
-<ul>
-    {% for review in reviews %}
-        <p>{{ review.user }}: {{ review.text }}</p>
-    {% endfor %}
-</ul>
-
-{% if user.is_authenticated %}
-    {% if user_review %}
-        <a href="{% url 'edit-review' restaurant.pk %}" class="btn btn-primary">Edit Review</a>
-    {% else %}
-        <a href="{% url 'add-review' restaurant.pk %}" class="btn btn-primary">Add Review</a>
-    {% endif %}
-{% else %}
-    <p><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
-{% endif %}
-
-
+    </div>
+    <div class="details">
+        <h2>Restaurant Details</h2>
+        <p>Cost for two: {{ restaurant.cost_for_two }}</p>
+        <p>Owner: {{ restaurant.owner }}</p>
+        <p>Location: {{ restaurant.location }}</p>
+        <p>Address: {{ restaurant.address }}</p>
+        <p>Timings: {{ restaurant.opening_time }} to {{ restaurant.closing_time }}</p>
+        <p>Type: {{ restaurant.food_type }}</p>
+    </div>
+    <div class="dishes-section">
+        <h2>Dishes</h2>
+        <table class="dishes-table">
+            <thead>
+                <tr>
+                    <th>Dish Name</th>
+                    <th>Price</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dish in dishes %}
+                    <tr>
+                        <td>{{ dish.name }}</td>
+                        <td>{{ dish.price }}</td>
+                        <td>{{ dish.dish_type }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="reviews-section">
+        <div class="reviews-list">
+            <h2>Reviews and Ratings</h2>
+            <ul>
+                {% for review in reviews %}
+                    <li>{{ review.user }}: {{ review.text }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="add-review-button">
+            {% if user.is_authenticated %}
+                {% if user_review %}
+                    <a href="{% url 'edit-review' restaurant.pk %}" class="btn btn-primary">Edit Review</a>
+                {% else %}
+                    <a href="{% url 'add-review' restaurant.pk %}" class="btn btn-primary">Add Review</a>
+                {% endif %}
+            {% else %}
+                <p><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,0 +1,39 @@
+.container {
+    padding: 20px;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+.img-thumbnail {
+    margin: 10px;
+    max-width: 100%;
+    height: auto;
+}
+
+.photos-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+#bookmark-toggle-btn {
+    width: 120px;
+    background-color: #dc3545; /* Red color for the remove button */
+    color: white;
+    border: none;
+    padding: 10px;
+}
+
+#bookmark-toggle-btn:hover {
+    background-color: #c82333;
+}
