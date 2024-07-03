@@ -2,6 +2,15 @@
 {% load static %}
 
 {% block content %}
+{% if user.is_authenticated %}
+    <button id="bookmark-toggle-btn" data-restaurant-id="{{ restaurant.pk }}">
+        {% if restaurant.bookmarked_by_user %}
+            Remove Bookmark
+        {% else %}
+            Add Bookmark
+        {% endif %}
+    </button>
+{% endif %}
 <h1>{{ restaurant.title }}</h1>
 <p>Rating: {{ restaurant.average_rating }}</p>
 <p>Cost for two: {{ restaurant.cost_for_two }}</p>
@@ -14,7 +23,7 @@
 <h2>Dishes</h2>
 <ul>
     {% for dish in dishes %}
-        <li>{{ dish.name }} - {{ dish.price }} ({{ dish.dish_type }})</li>
+        <p>{{ dish.name }} - {{ dish.price }} ({{ dish.dish_type }})</p>
     {% endfor %}
 </ul>
 
@@ -41,5 +50,6 @@
 {% else %}
     <p><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
 {% endif %}
+
 
 {% endblock %}

@@ -122,9 +122,9 @@ main {
 .filters-form .filter-btn:hover {
     background-color: #0056b3;
 }
-/* CSS to hide the overlay initially and style it */
+/* CSS to style the overlay and form elements */
 .overlay {
-    display: none; 
+    display: none; /* Hide initially */
     position: fixed;
     top: 0;
     left: 0;
@@ -141,6 +141,9 @@ main {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: relative; /* Ensure the close button positions correctly */
+    max-width: 400px; /* Example: Adjust as needed */
+    width: 100%;
 }
 
 .close-btn {
@@ -152,9 +155,67 @@ main {
     border: none;
     cursor: pointer;
     color: #333;
+    z-index: 1001; /* Ensure it's above overlay content */
 }
 
 .close-btn:hover {
     color: red; /* Example: Change color on hover */
 }
+
+.overlay-content label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.overlay-content input[type="text"],
+.overlay-content input[type="number"],
+.overlay-content select {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.overlay-content button.filter-btn {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.overlay-content button.filter-btn:hover {
+    background-color: #45a049;
+}
+
+.overlay-content select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.overlay-content button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #f44336;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.rm-bookmark button{
+    width:60px;
+    background-color: red;
+    color:white;
+}
+
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, reverse
+from django.shortcuts import render, get_object_or_404, reverse,redirect
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django.db.models import Avg
@@ -8,6 +8,10 @@ from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Review
 from .forms import ReviewForm
+from django.http import JsonResponse
+from accounts.models import Bookmark
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 class RestaurantListView(ListView):
     model = Restaurant
@@ -119,3 +123,42 @@ class ReviewUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('restaurant-detail', args=[str(self.object.restaurant.pk)])
+    
+class BookmarkToggleView(View):
+    def post(self, request, restaurant_id):
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+        user = request.user
+
+        # Check if the user has already bookmarked this restaurant
+        bookmark, created = Bookmark.objects.get_or_create(user=user, restaurant=restaurant)
+
+        if not created:
+            # Bookmark already exists, delete it (unbookmark)
+            bookmark.delete()
+            action = 'remove'
+        else:
+            # Bookmark doesn't exist, create it (bookmark)
+            action = 'add'
+
+        return JsonResponse({'action': action})
+
+@login_required
+def my_bookmarked_restaurants(request):
+    user = request.user
+    bookmarks = Bookmark.objects.filter(user=user)
+    bookmarked_restaurants = [bookmark.restaurant for bookmark in bookmarks]
+    
+    context = {
+        'bookmarked_restaurants': bookmarked_restaurants
+    }
+    return render(request, 'hotel/bookmarked_restaurants.html', context)
+
+@login_required
+def remove_bookmark(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    bookmark = Bookmark.objects.filter(user=request.user, restaurant=restaurant).first()
+    
+    if bookmark:
+        bookmark.delete()
+
+    return redirect('my-bookmarked-restaurants')

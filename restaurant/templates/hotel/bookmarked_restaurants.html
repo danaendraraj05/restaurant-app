@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<h1>My Bookmarked Restaurants</h1>
+
+<ul>
+  {% for restaurant in bookmarked_restaurants %}
+    <li>
+      {{ restaurant.title }} - Rating: {{ restaurant.average_rating }}
+      <form action="{% url 'remove-bookmark' restaurant.id %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-sm" style="width: 180px; background-color: red;">Remove Bookmark</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No bookmarked restaurants found.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

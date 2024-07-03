@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/restaurant_list.css' %}">
     <link rel="stylesheet" href="{% static 'css/common_auth.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="{% static 'js/popup.js' %}"></script>
+    <script src="{% static 'js/bookmark.js' '%}"></script>
 </head>
 <body>
     <header>
@@ -16,7 +18,7 @@
             <ul>
                 <li><a href="{% url 'restaurant-list' %}">Home</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'user-restaurants' %}">My Restaurants</a></li>
+                    <li><a href="{% url 'my-bookmarked-restaurants' %}">My Bookmarked Restaurants</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
                     <li><a href="{% url 'login' %}">Login</a></li>

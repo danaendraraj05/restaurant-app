@@ -29,6 +29,9 @@ class Restaurant(models.Model):
     food_type = models.CharField(max_length=7, choices=FOOD_TYPE_CHOICES)
     cuisines = models.ManyToManyField(Cuisine, related_name='restaurants')
 
+    def bookmarked_users(self):
+        return self.bookmark_users.all().values_list('user__username', flat=True)
+
     @property
     def average_rating(self):
         reviews = self.reviews.all()
