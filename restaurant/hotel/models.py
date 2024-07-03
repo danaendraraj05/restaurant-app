@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg
 
 class Cuisine(models.Model):
     name = models.CharField(max_length=100)
@@ -27,6 +28,13 @@ class Restaurant(models.Model):
     closing_time = models.TimeField()
     food_type = models.CharField(max_length=7, choices=FOOD_TYPE_CHOICES)
     cuisines = models.ManyToManyField(Cuisine, related_name='restaurants')
+
+    @property
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            return reviews.aggregate(Avg('rating'))['rating__avg']
+        return 0.0
 
     def save(self, *args, **kwargs):
         if not self.id:  # If creating a new instance
@@ -60,14 +68,12 @@ class Dish(models.Model):
         return f"{self.name} ({self.dish_type}) - {self.restaurant.title}"
 
 class Review(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='reviews')
+    restaurant = models.ForeignKey(Restaurant, related_name='reviews', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()  # Assuming rating is an integer field (e.g., 1 to 5)
-    comment = models.TextField()
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('restaurant', 'user')  # Ensure a user can only review a restaurant once
+    rating = models.PositiveSmallIntegerField()
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Review by {self.user.username} for {self.restaurant.title}"
+        return f"Review by {self.user} for {self.restaurant}"

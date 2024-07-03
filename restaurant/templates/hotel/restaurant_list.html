@@ -2,20 +2,52 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-    <h1>Restaurants</h1>
-    <form method="get" class="filters-form">
-        <!-- Filters and Sorting Form -->
-        <label for="sort_by">Sort By:</label>
-        <select name="sort_by" id="sort_by">
-            <option value="">Select</option>
-            <option value="cost_high_to_low">Cost: High to Low</option>
-            <option value="cost_low_to_high">Cost: Low to High</option>
-            <option value="rating_high_to_low">Rating: High to Low</option>
-            <option value="rating_low_to_high">Rating: Low to High</option>
-        </select>
-        <button type="submit" class="filter-btn">Filter</button>
-    </form>
+<h1>Restaurants</h1>
+<!-- Filter Button -->
+<button id="filter-btn" class="btn btn-primary">Filter</button>
+
+
+<div id="filter-overlay" class="overlay">
+    <div class="overlay-content">
+        <!-- Filter form goes here -->
+        <form id="filter-form" method="get">
+            <!-- Filters and Sorting Form -->
+            <label for="sort_by">Sort By:</label>
+            <select name="sort_by" id="sort_by">
+                <option value="">Select</option>
+                <option value="cost_high_to_low">Cost: High to Low</option>
+                <option value="cost_low_to_high">Cost: Low to High</option>
+                <option value="rating_high_to_low">Rating: High to Low</option>
+                <option value="rating_low_to_high">Rating: Low to High</option>
+            </select>
+            
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" value="{{ request.GET.city|default_if_none:'' }}">
+
+            <label for="food_type">Food Type:</label>
+            <select name="food_type" id="food_type">
+                <option value="">Select Type</option>
+                <option value="Veg">Vegetarian</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Non-Veg">Non-Vegetarian</option>
+                <!-- Add other food types as needed -->
+            </select>
+
+            <label for="cuisine">Cuisine:</label>
+            <input type="text" id="cuisine" name="cuisine" value="{{ request.GET.cuisine|default_if_none:'' }}">
+
+            <label for="min_rating">Min Rating:</label>
+            <input type="number" id="min_rating" name="min_rating" min="1" max="5" value="{{ request.GET.min_rating|default_if_none:'' }}">
+
+            <label for="max_cost">Max Cost:</label>
+            <input type="number" id="max_cost" name="max_cost" value="{{ request.GET.max_cost|default_if_none:'' }}">
+            <button type="submit" class="filter-btn">Filter</button>
+        </form>
+
+        <!-- Close button for the overlay -->
+        <button id="close-filter-btn" class="close-btn">&times;</button>
+    </div>
+</div>
 
     <div class="restaurants-list">
         {% for restaurant in restaurants %}
@@ -27,7 +59,7 @@
             {% endfor %}
             <div class="restaurant-info">
                 <h5 class="restaurant-title"><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.title }}</a></h5>
-                <p class="restaurant-rating">Rating: {{ restaurant.rating }}</p>
+                <p class="restaurant-rating">Rating: {{ restaurant.average_rating }}</p>
                 <p class="restaurant-cost">Cost for two: {{ restaurant.cost_for_two }}</p>
             </div>
         </div>

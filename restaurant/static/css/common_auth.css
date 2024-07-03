@@ -1,0 +1,96 @@
+/* Container */
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+/* Card */
+.card {
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.card-footer {
+    padding: 10px;
+    text-align: center;
+    background-color: #f7f7f7;
+    border-top: 1px solid #ddd;
+}
+
+/* Form */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Footer Links */
+.card-footer a,
+.text-center a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card-footer a:hover,
+.text-center a:hover {
+    text-decoration: underline;
+}
+
+/* Text Center */
+.text-center {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.text-center small {
+    display: block;
+    color: #6c757d;
+}

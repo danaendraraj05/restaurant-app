@@ -27,8 +27,3 @@ class DishAdmin(admin.ModelAdmin):
     list_filter = ('dish_type', 'restaurant')
     search_fields = ('name',)
 
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('restaurant', 'user', 'rating', 'date_added')
-    list_filter = ('restaurant', 'user__username')  # Assuming user is a ForeignKey to User
-    search_fields = ('restaurant__title', 'user__username', 'comment')

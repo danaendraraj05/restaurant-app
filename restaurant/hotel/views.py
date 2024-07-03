@@ -1,9 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, reverse
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
+from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Restaurant
+from django.views.generic import CreateView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Restaurant, Review
+from .forms import ReviewForm
 
 class RestaurantListView(ListView):
     model = Restaurant
@@ -21,9 +25,11 @@ class RestaurantListView(ListView):
         elif sort_by == 'cost_low_to_high':
             queryset = queryset.order_by('cost_for_two')
         elif sort_by == 'rating_high_to_low':
-            queryset = queryset.order_by('-rating')
+            queryset = Restaurant.objects.annotate(
+            avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
         elif sort_by == 'rating_low_to_high':
-            queryset = queryset.order_by('rating')
+            queryset = Restaurant.objects.annotate(
+            avg_rating=Avg('reviews__rating')).order_by('avg_rating')
 
         # Filtering
         city = self.request.GET.get('city')
@@ -40,7 +46,6 @@ class RestaurantListView(ListView):
         
         is_open = self.request.GET.get('is_open')
         if is_open:
-            # Example: Assuming you have a method to check if the restaurant is open
             queryset = queryset.filter(is_open=True)
         
         min_rating = self.request.GET.get('min_rating')
@@ -70,10 +75,47 @@ class RestaurantDetailView(DetailView):
     model = Restaurant
     template_name = 'hotel/restaurant_detail.html'
     context_object_name = 'restaurant'
+
+    @property
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            total_ratings = sum(review.rating for review in reviews)
+            return total_ratings / len(reviews)
+        return 0  # Default or handle the case where there are no reviews
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['dishes'] = self.object.dishes.all()
         context['photos'] = self.object.photos.all()
-        context['reviews'] = self.object.reviews.all()  # Ensure 'reviews' is properly related in your models
+        context['reviews'] = self.object.reviews.all()
+        if self.request.user.is_authenticated:
+            try:
+                context['user_review'] = Review.objects.get(user=self.request.user, restaurant=self.object)
+            except Review.DoesNotExist:
+                context['user_review'] = None
         return context
+
+class ReviewCreateView(LoginRequiredMixin, CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'hotel/review_form.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.restaurant = get_object_or_404(Restaurant, pk=self.kwargs['pk'])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('restaurant-detail', args=[str(self.object.restaurant.pk)])
+
+class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'hotel/review_form.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Review, restaurant_id=self.kwargs['pk'], user=self.request.user)
+
+    def get_success_url(self):
+        return reverse('restaurant-detail', args=[str(self.object.restaurant.pk)])
