@@ -67,6 +67,7 @@
 <div class="container">
     <div class="header">
         <div class="restaurant-name">{{ restaurant.title }}</div>
+        <div header-button>
         {% if user.is_authenticated %}
         <button id="bookmark-toggle-btn" data-restaurant-id="{{ restaurant.pk }}" class="bookmark-btn">
             {% if bookmarked_by_user %}
@@ -75,7 +76,15 @@
                 Add Bookmark
             {% endif %}
         </button>
+        <button id="visited-toggle-btn" data-restaurant-id="{{ restaurant.pk }}" class="visited-btn">
+            {% if visited_by_user %}
+                Remove Visited
+            {% else %}
+                Mark as Visited
+            {% endif %}
+        </button>
         {% endif %}
+    </div>
     </div>
     <div class="details">
         <h2>Restaurant Details</h2>

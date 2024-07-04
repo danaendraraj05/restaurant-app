@@ -28,9 +28,12 @@ class Restaurant(models.Model):
     closing_time = models.TimeField()
     food_type = models.CharField(max_length=7, choices=FOOD_TYPE_CHOICES)
     cuisines = models.ManyToManyField(Cuisine, related_name='restaurants')
-
+    
     def bookmarked_users(self):
-        return self.bookmark_users.all().values_list('user__username', flat=True)
+        return self.bookmark_users.all().values_list('username', flat=True)
+
+    def visited_users(self):
+        return self.visited_users.all().values_list('username', flat=True)
 
     @property
     def average_rating(self):
@@ -46,6 +49,7 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Photo(models.Model):
     restaurant = models.ForeignKey(Restaurant, related_name='photos', on_delete=models.CASCADE)

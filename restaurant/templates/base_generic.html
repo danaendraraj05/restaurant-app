@@ -12,6 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="{% static 'js/popup.js' %}"></script>
     <script src="{% static 'js/bookmark.js' '%}"></script>
+    <script src="{% static 'js/visited.js' '%}"></script>
 </head>
 <body>
     <header>
@@ -19,7 +20,8 @@
             <ul>
                 <li><a href="{% url 'restaurant-list' %}">Home</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'my-bookmarked-restaurants' %}">My Bookmarked Restaurants</a></li>
+                    <li><a href="{% url 'my-visited-restaurants' %}">Visited Restaurants</a></li>
+                    <li><a href="{% url 'my-bookmarked-restaurants' %}">Bookmarked Restaurants</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
                     <li><a href="{% url 'login' %}">Login</a></li>

@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Review
 from .forms import ReviewForm
 from django.http import JsonResponse
-from accounts.models import Bookmark
+from accounts.models import Bookmark,Visited
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
@@ -85,7 +85,9 @@ class RestaurantDetailView(DetailView):
                 context['user_review'] = Review.objects.get(user=self.request.user, restaurant=self.object)
             except Review.DoesNotExist:
                 context['user_review'] = None
+
         context['bookmarked_by_user'] = Bookmark.objects.filter(user=self.request.user, restaurant=self.object).exists()
+        context['visited_by_user'] = Visited.objects.filter(user=self.request.user, restaurant=self.object).exists()
         return context
 
 class ReviewCreateView(LoginRequiredMixin, CreateView):
@@ -150,3 +152,45 @@ def remove_bookmark(request, restaurant_id):
         bookmark.delete()
 
     return redirect('my-bookmarked-restaurants')
+
+# hotel/views.py
+
+class VisitedToggleView(View):
+    def post(self, request, restaurant_id):
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+        user = request.user
+
+        # Check if the user has already marked this restaurant as visited
+        visited, created = Visited.objects.get_or_create(user=user, restaurant=restaurant)
+
+        if not created:
+            # Visited entry already exists, delete it (unmark as visited)
+            visited.delete()
+            action = 'remove'
+        else:
+            # Visited entry doesn't exist, create it (mark as visited)
+            action = 'add'
+
+        return JsonResponse({'action': action})
+
+@login_required
+def my_visited_restaurants(request):
+    user = request.user
+    visited = Visited.objects.filter(user=user)
+    visited_restaurants = [visit.restaurant for visit in visited]
+    
+    context = {
+        'visited_restaurants': visited_restaurants
+    }
+    return render(request, 'hotel/visited_restaurants.html', context)
+
+@login_required
+def remove_visited(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    visited = Visited.objects.filter(user=request.user, restaurant=restaurant).first()
+    
+    if visited:
+        visited.delete()
+
+    return redirect('my-visited-restaurants')
+

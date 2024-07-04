@@ -26,7 +26,7 @@ ul li {
     margin-bottom: 10px;
 }
 
-#bookmark-toggle-btn {
+#bookmark-toggle-btn,#visited-toggle-btn {
     width: 120px;
     background-color: #dc3545; /* Red color for the remove button */
     color: white;
@@ -34,6 +34,17 @@ ul li {
     padding: 10px;
 }
 
-#bookmark-toggle-btn:hover {
+#bookmark-toggle-btn:hover,#visited-toggle-btn:hover {
     background-color: #c82333;
+}
+#visited-toggle-btn {
+    width: 120px;
+    background-color: #184b11; /* Red color for the remove button */
+    color: white;
+    border: none;
+    padding: 10px;
+}
+
+#visited-toggle-btn:hover {
+    background-color: #5fdf46;
 }
