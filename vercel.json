@@ -3,7 +3,7 @@
         "src": "restaurant/restaurant/wsgi.py",
         "use": "@ardnt/vercel-python-wsgi",
         "config": { 
-            "maxLambdaSize": 15000000,  // 15 MB
+            "maxLambdaSize": 15000000,
             "runtime": "python3.9"  
         }
     }],
