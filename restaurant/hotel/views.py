@@ -85,9 +85,9 @@ class RestaurantDetailView(DetailView):
                 context['user_review'] = Review.objects.get(user=self.request.user, restaurant=self.object)
             except Review.DoesNotExist:
                 context['user_review'] = None
-
-        context['bookmarked_by_user'] = Bookmark.objects.filter(user=self.request.user, restaurant=self.object).exists()
-        context['visited_by_user'] = Visited.objects.filter(user=self.request.user, restaurant=self.object).exists()
+        if self.request.user.is_authenticated:
+            context['bookmarked_by_user'] = Bookmark.objects.filter(user=self.request.user, restaurant=self.object).exists()
+            context['visited_by_user'] = Visited.objects.filter(user=self.request.user, restaurant=self.object).exists()
         return context
 
 class ReviewCreateView(LoginRequiredMixin, CreateView):
