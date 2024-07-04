@@ -21,47 +21,55 @@ class RestaurantListView(ListView):
 
     def get_queryset(self):
         queryset = Restaurant.objects.all().order_by('title')
-        
-        # Sorting
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by == 'cost_high_to_low':
-            queryset = queryset.order_by('-cost_for_two')
-        elif sort_by == 'cost_low_to_high':
-            queryset = queryset.order_by('cost_for_two')
-        elif sort_by == 'rating_high_to_low':
-            queryset = Restaurant.objects.annotate(
-            avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
-        elif sort_by == 'rating_low_to_high':
-            queryset = Restaurant.objects.annotate(
-            avg_rating=Avg('reviews__rating')).order_by('avg_rating')
-
-        # Filtering
-        city = self.request.GET.get('city')
-        if city:
-            queryset = queryset.filter(location__icontains=city)
-        
-        food_type = self.request.GET.get('food_type')
-        if food_type:
-            queryset = queryset.filter(food_type=food_type)
-        
-        cuisine = self.request.GET.get('cuisine')
-        if cuisine:
-            queryset = queryset.filter(cuisines__name=cuisine)
-        
-        is_open = self.request.GET.get('is_open')
-        if is_open:
-            queryset = queryset.filter(is_open=True)
-        
-        min_rating = self.request.GET.get('min_rating')
-        if min_rating:
-            queryset = queryset.filter(rating__gte=min_rating)
-        
-        max_cost = self.request.GET.get('max_cost')
-        if max_cost:
-            queryset = queryset.filter(cost_for_two__lte=max_cost)
-        
+        queryset = self.apply_sorting(queryset)
+        queryset = self.apply_filters(queryset)
         return queryset
 
+    def apply_sorting(self, queryset):
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by == 'cost_high_to_low':
+            return queryset.order_by('-cost_for_two')
+        elif sort_by == 'cost_low_to_high':
+            return queryset.order_by('cost_for_two')
+        elif sort_by in ['rating_high_to_low', 'rating_low_to_high']:
+            return self.sort_by_rating(queryset, sort_by)
+        return queryset
+
+    def sort_by_rating(self, queryset, sort_by):
+        annotation = '-avg_rating' if sort_by == 'rating_high_to_low' else 'avg_rating'
+        return queryset.annotate(avg_rating=Avg('reviews__rating')).order_by(annotation)
+
+    def apply_filters(self, queryset):
+        params = self.request.GET
+        city = params.get('city')
+        food_type = params.get('food_type')
+        cuisine = params.get('cuisine')
+        is_open = params.get('is_open')
+        min_rating = params.get('min_rating')
+        max_cost = params.get('max_cost')
+
+        if city:
+            queryset = queryset.filter(location__icontains=city)
+        if food_type:
+            queryset = queryset.filter(food_type=food_type)
+        if cuisine:
+            queryset = queryset.filter(cuisines__name=cuisine)
+        if is_open:
+            queryset = queryset.filter(is_open=True)
+        min_rating = self.request.GET.get('min_rating')
+        
+        if min_rating:
+            try:
+                min_rating = float(min_rating)
+                queryset = queryset.annotate(avg_rating=Avg('reviews__rating')).filter(avg_rating__gte=min_rating)
+            except ValueError:
+                pass
+
+        if max_cost:
+            queryset = queryset.filter(cost_for_two__lte=max_cost)
+
+        return queryset
+    
 class RestaurantDetailView(DetailView):
     model = Restaurant
     template_name = 'hotel/restaurant_detail.html'
@@ -153,24 +161,16 @@ def remove_bookmark(request, restaurant_id):
 
     return redirect('my-bookmarked-restaurants')
 
-# hotel/views.py
-
 class VisitedToggleView(View):
     def post(self, request, restaurant_id):
         restaurant = get_object_or_404(Restaurant, id=restaurant_id)
         user = request.user
-
-        # Check if the user has already marked this restaurant as visited
         visited, created = Visited.objects.get_or_create(user=user, restaurant=restaurant)
-
         if not created:
-            # Visited entry already exists, delete it (unmark as visited)
             visited.delete()
             action = 'remove'
         else:
-            # Visited entry doesn't exist, create it (mark as visited)
             action = 'add'
-
         return JsonResponse({'action': action})
 
 @login_required
