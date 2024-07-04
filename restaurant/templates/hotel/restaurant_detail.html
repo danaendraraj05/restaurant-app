@@ -68,13 +68,13 @@
     <div class="header">
         <div class="restaurant-name">{{ restaurant.title }}</div>
         {% if user.is_authenticated %}
-            <button id="bookmark-toggle-btn" data-restaurant-id="{{ restaurant.pk }}" class="bookmark-btn">
-                {% if restaurant.bookmarked_by_user %}
-                    Remove Bookmark
-                {% else %}
-                    Add Bookmark
-                {% endif %}
-            </button>
+        <button id="bookmark-toggle-btn" data-restaurant-id="{{ restaurant.pk }}" class="bookmark-btn">
+            {% if bookmarked_by_user %}
+                Remove Bookmark
+            {% else %}
+                Add Bookmark
+            {% endif %}
+        </button>
         {% endif %}
     </div>
     <div class="details">

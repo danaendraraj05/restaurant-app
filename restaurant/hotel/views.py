@@ -62,19 +62,6 @@ class RestaurantListView(ListView):
         
         return queryset
 
-@method_decorator(login_required, name='dispatch')
-class UserRestaurantsListView(ListView):
-    model = Restaurant
-    template_name = 'hotel/user_restaurants.html'
-    context_object_name = 'restaurants'
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Restaurant.objects.filter(
-            Q(bookmarked_by=user) | Q(visited_by=user)
-        )
-        return queryset
-
 class RestaurantDetailView(DetailView):
     model = Restaurant
     template_name = 'hotel/restaurant_detail.html'
@@ -98,6 +85,7 @@ class RestaurantDetailView(DetailView):
                 context['user_review'] = Review.objects.get(user=self.request.user, restaurant=self.object)
             except Review.DoesNotExist:
                 context['user_review'] = None
+        context['bookmarked_by_user'] = Bookmark.objects.filter(user=self.request.user, restaurant=self.object).exists()
         return context
 
 class ReviewCreateView(LoginRequiredMixin, CreateView):

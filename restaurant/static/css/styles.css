@@ -217,5 +217,17 @@ main {
     background-color: red;
     color:white;
 }
+.list-header{
+    display:flex;
+    justify-content: space-between;
+}
+.open-filter-btn{
+    height:40px;
+    width:120px;
+    background-color:blue;
+    color:white;
+    border-radius:5px;
+    border:solid white 2px;
+}
 
 
