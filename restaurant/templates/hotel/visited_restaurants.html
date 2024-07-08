@@ -4,19 +4,20 @@
 {% block content %}
 <h1>Visited Restaurants</h1>
 
-<ul>
+<table>  
   {% for restaurant in visited_restaurants %}
-    <li>
-      {{ restaurant.title }} - Rating: {{ restaurant.average_rating }}
-      <form action="{% url 'remove-visited' restaurant.id %}" method="post" style="display: inline;">
+  <tr>
+    <td><h3 style="padding-right: 2em;" class="restaurant-title"><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.title }}</a></h3></td>
+      <td><form action="{% url 'remove-visited' restaurant.id %}" method="post" style="display: inline;">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger btn-sm" style="width: 180px; background-color: red;">Remove Visited</button>
       </form>
-    </li>
+    </td>
+</tr>
   {% empty %}
-    <li>No visited restaurants found.</li>
+    <td>No visited restaurants found.</td>
   {% endfor %}
-</ul>
+</table>
 
 {% endblock %}
 

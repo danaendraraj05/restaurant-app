@@ -4,18 +4,19 @@
 {% block content %}
 <h1>My Bookmarked Restaurants</h1>
 
-<ul>
-  {% for restaurant in bookmarked_restaurants %}
-    <li>
-      {{ restaurant.title }} - Rating: {{ restaurant.average_rating }}
-      <form action="{% url 'remove-bookmark' restaurant.id %}" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger btn-sm" style="width: 180px; background-color: red;">Remove Bookmark</button>
-      </form>
-    </li>
-  {% empty %}
-    <li>No bookmarked restaurants found.</li>
-  {% endfor %}
-</ul>
+<table>  
+    {% for restaurant in bookmarked_restaurants %}
+    <tr>
+      <td><h3 style="padding-right: 2em;" class="restaurant-title"><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.title }}</a></h3></td>
+        <td><form action="{% url 'remove-bookmark' restaurant.id %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm" style="width: 180px; background-color: red;">Remove Bookmark</button>
+        </form>
+      </td>
+  </tr>
+    {% empty %}
+      <td>No bookmarked restaurants found.</td>
+    {% endfor %}
+  </table>
 
 {% endblock %}
