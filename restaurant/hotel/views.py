@@ -1,9 +1,7 @@
 from django.shortcuts import render, get_object_or_404, reverse,redirect
 from django.views.generic import ListView, DetailView
-from django.db.models import Q
 from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Review
@@ -11,56 +9,62 @@ from .forms import ReviewForm
 from django.http import JsonResponse
 from accounts.models import Bookmark,Visited
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+import django_filters
+
+class RestaurantFilter(django_filters.FilterSet):
+    city = django_filters.CharFilter(field_name='location', lookup_expr='icontains')
+    food_type = django_filters.CharFilter(field_name='food_type')
+    cuisine = django_filters.CharFilter(field_name='cuisines__name')
+    is_open = django_filters.BooleanFilter(field_name='is_open')
+    min_rating = django_filters.NumberFilter(method='filter_by_min_rating')
+    max_cost = django_filters.NumberFilter(method='filter_by_max_cost')
+
+    class Meta:
+        model = Restaurant 
+        fields = ['city', 'food_type', 'cuisine', 'is_open', 'min_rating', 'max_cost']
+
+    def filter_by_min_rating(self, queryset, name, value):
+        try:
+            value = float(value)
+            return queryset.annotate(avg_rating=Avg('reviews__rating')).filter(avg_rating__gte=value)
+        except ValueError:
+            return queryset
+
+    def filter_by_max_cost(self, queryset, name, value):
+        try:
+            value = float(value)
+            return queryset.filter(cost_for_two__lte=value)
+        except ValueError:
+            return queryset
 
 class RestaurantListView(ListView):
     model = Restaurant
-    template_name = 'hotel/restaurant_list.html'
+    template_name = 'restaurant_list.html'
     context_object_name = 'restaurants'
-    paginate_by = 10
 
     def get_queryset(self):
         queryset = Restaurant.objects.all().order_by('title')
-        
-        # Sorting
+        queryset = self.apply_sorting(queryset)
+        queryset = self.apply_filters(queryset)
+        return queryset
+
+    def apply_sorting(self, queryset):
         sort_by = self.request.GET.get('sort_by')
         if sort_by == 'cost_high_to_low':
-            queryset = queryset.order_by('-cost_for_two')
+            return queryset.order_by('-cost_for_two')
         elif sort_by == 'cost_low_to_high':
-            queryset = queryset.order_by('cost_for_two')
-        elif sort_by == 'rating_high_to_low':
-            queryset = Restaurant.objects.annotate(
-            avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
-        elif sort_by == 'rating_low_to_high':
-            queryset = Restaurant.objects.annotate(
-            avg_rating=Avg('reviews__rating')).order_by('avg_rating')
-
-        # Filtering
-        city = self.request.GET.get('city')
-        if city:
-            queryset = queryset.filter(location__icontains=city)
-        
-        food_type = self.request.GET.get('food_type')
-        if food_type:
-            queryset = queryset.filter(food_type=food_type)
-        
-        cuisine = self.request.GET.get('cuisine')
-        if cuisine:
-            queryset = queryset.filter(cuisines__name=cuisine)
-        
-        is_open = self.request.GET.get('is_open')
-        if is_open:
-            queryset = queryset.filter(is_open=True)
-        
-        min_rating = self.request.GET.get('min_rating')
-        if min_rating:
-            queryset = queryset.filter(rating__gte=min_rating)
-        
-        max_cost = self.request.GET.get('max_cost')
-        if max_cost:
-            queryset = queryset.filter(cost_for_two__lte=max_cost)
-        
+            return queryset.order_by('cost_for_two')
+        elif sort_by in ['rating_high_to_low', 'rating_low_to_high']:
+            return self.sort_by_rating(queryset, sort_by)
         return queryset
+
+    def sort_by_rating(self, queryset, sort_by):
+        annotation = '-avg_rating' if sort_by == 'rating_high_to_low' else 'avg_rating'
+        return queryset.annotate(avg_rating=Avg('reviews__rating')).order_by(annotation)
+    
+    def apply_filters(self, queryset):
+        filterset = RestaurantFilter(self.request.GET, queryset=queryset)
+        return filterset.qs
 
 class RestaurantDetailView(DetailView):
     model = Restaurant
@@ -73,7 +77,7 @@ class RestaurantDetailView(DetailView):
         if reviews:
             total_ratings = sum(review.rating for review in reviews)
             return total_ratings / len(reviews)
-        return 0  # Default or handle the case where there are no reviews
+        return 0 
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

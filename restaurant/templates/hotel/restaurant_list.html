@@ -3,8 +3,8 @@
 
 {% block content %}
 <div class="list-header">
-<h1>Restaurants</h1>
-<button id="filter-btn" class="open-filter-btn">Filter</button>
+    <h1>Restaurants</h1>
+    <button id="filter-btn" class="open-filter-btn">Filter</button>
 </div>
 
 <div id="filter-overlay" class="overlay">
@@ -18,7 +18,7 @@
                 <option value="rating_high_to_low">Rating: High to Low</option>
                 <option value="rating_low_to_high">Rating: Low to High</option>
             </select>
-            
+
             <label for="city">City:</label>
             <input type="text" id="city" name="city" value="{{ request.GET.city|default_if_none:'' }}">
 
@@ -42,7 +42,7 @@
             
             <button type="submit" class="filter-btn">Filter</button>
         </form>
-        
+
         <!-- Close button for the overlay -->
         <button id="close-filter-btn" class="close-btn">&times;</button>
     </div>
