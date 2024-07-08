@@ -4,7 +4,10 @@
 {% block content %}
 <div class="list-header">
     <h1>Restaurants</h1>
+    <div class="right-corner">
+    <input type="text" id="search-input" placeholder="Search by name...">
     <button id="filter-btn" class="open-filter-btn">Filter</button>
+    </div>
 </div>
 
 <div id="filter-overlay" class="overlay">
@@ -64,4 +67,5 @@
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}
