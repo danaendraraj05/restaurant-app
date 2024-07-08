@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, reverse,redirect
 from django.views.generic import ListView, DetailView
-from django.db.models import Avg
+from django.db.models import Avg,Q
 from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -44,6 +44,11 @@ class RestaurantListView(ListView):
 
     def get_queryset(self):
         queryset = Restaurant.objects.all().order_by('title')
+
+        search_term = self.request.GET.get('search_hidden')
+        print(search_term)
+        if search_term:
+            queryset = queryset.filter(Q(title__icontains=search_term))
         queryset = self.apply_sorting(queryset)
         queryset = self.apply_filters(queryset)
         return queryset

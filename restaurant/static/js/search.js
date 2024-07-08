@@ -17,3 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    var searchInput = document.getElementById("search-input");
+    var searchHidden = document.getElementById("search-hidden");
+
+    // Set initial value of search-hidden
+    searchHidden.value = searchInput.value;
+
+    // Update search-hidden when search-input changes
+    searchInput.addEventListener("input", function() {
+        searchHidden.value = searchInput.value;
+    });
+});
